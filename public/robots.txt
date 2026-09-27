@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /portal/
+
+Sitemap: https://nexnrvora.com/sitemap.xml

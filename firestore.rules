@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Users collection
+    match /users/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Freelancers root
+    match /freelancers/{freelancerUid} {
+      
+      // Freelancer can read/write everything in their own workspace
+      allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+
+      // Clients subcollection
+      match /clients/{clientId} {
+        allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+      }
+
+      // Projects subcollection
+      match /projects/{projectId} {
+        // Freelancers can read/write their own projects
+        allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+        
+        // Clients can READ projects assigned to them
+        // To check this securely, we check the referenced client document
+        allow read: if request.auth != null && 
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'client' &&
+                    get(/databases/$(database)/documents/freelancers/$(freelancerUid)/clients/$(resource.data.clientId)).data.clientUserId == request.auth.uid;
+
+        // Project Files subcollection
+        match /files/{fileId} {
+          allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+          
+          allow read: if request.auth != null && 
+                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'client' &&
+                      get(/databases/$(database)/documents/freelancers/$(freelancerUid)/clients/$(get(/databases/$(database)/documents/freelancers/$(freelancerUid)/projects/$(projectId)).data.clientId)).data.clientUserId == request.auth.uid;
+        }
+
+        // Project Tasks subcollection
+        match /tasks/{taskId} {
+          allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+        }
+
+        // Project Messages subcollection
+        match /messages/{messageId} {
+          allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+          
+          allow read, write: if request.auth != null && 
+                              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'client' &&
+                              get(/databases/$(database)/documents/freelancers/$(freelancerUid)/clients/$(get(/databases/$(database)/documents/freelancers/$(freelancerUid)/projects/$(projectId)).data.clientId)).data.clientUserId == request.auth.uid;
+        }
+      }
+
+      // Invoices subcollection
+      match /invoices/{invoiceId} {
+        allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+        
+        allow read: if request.auth != null && 
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'client' &&
+                    get(/databases/$(database)/documents/freelancers/$(freelancerUid)/clients/$(resource.data.clientId)).data.clientUserId == request.auth.uid;
+      }
+
+      // Portfolio subcollection
+      match /portfolio/{itemId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == freelancerUid;
+      }
+
+      // Leads subcollection
+      match /leads/{leadId} {
+        allow read, write: if request.auth != null && request.auth.uid == freelancerUid;
+      }
+    }
+  }
+}
