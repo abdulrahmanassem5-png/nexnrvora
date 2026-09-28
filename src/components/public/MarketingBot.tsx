@@ -7,6 +7,16 @@ interface ChatMessage {
   content: string;
 }
 
+const SYSTEM_INSTRUCTION = `
+أنت خبير تسويق رقمي ومتخصص في تحسين محركات البحث (SEO).
+أنت تعمل كمساعد ذكي في الصفحة الرئيسية لمنصة "NEXNRVORA"، وهي منصة عالمية لإدارة المشاريع والفواتير للمستقلين (Freelancers).
+هدفك هو:
+1. إقناع الزوار (المستقلين) بأهمية التسجيل في المنصة لإدارة أعمالهم باحترافية.
+2. مساعدة المستقلين في كتابة محتوى إعلاني جذاب لخدماتهم.
+3. استخراج كلمات مفتاحية (Hashtags و SEO Keywords) مخصصة لمجالاتهم عند الطلب.
+عليك الإجابة باللغة العربية بأسلوب احترافي ومحفز ومباشر.
+`;
+
 export function MarketingBot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -20,7 +30,7 @@ export function MarketingBot() {
     const genAI = new GoogleGenerativeAI(apiKey);
     return genAI.getGenerativeModel({ 
       model: 'gemini-1.5-flash',
-      systemInstruction: generateContext()
+      systemInstruction: SYSTEM_INSTRUCTION
     });
   }, [apiKey]);
 
@@ -30,17 +40,6 @@ export function MarketingBot() {
     }
   }, [messages]);
 
-  const generateContext = () => {
-    return `
-أنت خبير تسويق رقمي ومتخصص في تحسين محركات البحث (SEO).
-أنت تعمل كمساعد ذكي في الصفحة الرئيسية لمنصة "NEXNRVORA"، وهي منصة عالمية لإدارة المشاريع والفواتير للمستقلين (Freelancers).
-هدفك هو:
-1. إقناع الزوار (المستقلين) بأهمية التسجيل في المنصة لإدارة أعمالهم باحترافية.
-2. مساعدة المستقلين في كتابة محتوى إعلاني جذاب لخدماتهم.
-3. استخراج كلمات مفتاحية (Hashtags و SEO Keywords) مخصصة لمجالاتهم عند الطلب.
-عليك الإجابة باللغة العربية بأسلوب احترافي ومحفز ومباشر.
-`;
-  };
 
   const sendMessage = async (promptText: string) => {
     if (!promptText.trim()) return;
