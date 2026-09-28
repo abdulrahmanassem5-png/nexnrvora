@@ -69,6 +69,7 @@ export interface ProjectFile {
   id: string;
   name: string;
   url: string;
+  storagePath?: string;
   uploadedAt: Date | any;
 }
 

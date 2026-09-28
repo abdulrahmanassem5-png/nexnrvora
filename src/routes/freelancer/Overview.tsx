@@ -52,7 +52,7 @@ export default function Overview() {
         });
 
         // Fetch paid invoices for revenue stats
-        const invoicesQuery = query(collection(db, `freelancers/${currentUser.uid}/invoices`), /*where*/('status', '==', 'paid'));
+        const invoicesQuery = query(collection(db, `freelancers/${currentUser.uid}/invoices`), where('status', '==', 'paid'));
         const invoicesSnap = await getDocs(invoicesQuery);
         let totalRev = 0;
         
@@ -152,7 +152,7 @@ export default function Overview() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700" />
           <div className="relative z-10">
             <h3 className="text-slate-400 font-semibold mb-2">إجمالي الإيرادات</h3>
-            <div className="text-4xl font-black text-slate-50">${stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-4xl font-black text-slate-50">{stats.totalRevenue.toLocaleString()} <span className="text-xl text-slate-400">ر.س</span></div>
           </div>
         </div>
 

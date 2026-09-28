@@ -161,7 +161,7 @@ export default function ContractSignView() {
             <h3 className="text-lg font-bold text-white mb-2 border-b-2 border-slate-800 pb-2 inline-block">تفاصيل المشروع والقيمة</h3>
             <div className="mt-4 bg-slate-800/30 p-4 rounded-xl border border-slate-800">
               <p className="text-slate-300 font-medium mb-2"><span className="font-bold text-indigo-400">المشروع:</span> {project?.title}</p>
-              <p className="text-slate-300 font-medium"><span className="font-bold text-indigo-400">القيمة المتفق عليها:</span> <span className="text-emerald-400 font-black text-xl">\${contract.value}</span></p>
+              <p className="text-slate-300 font-medium"><span className="font-bold text-indigo-400">القيمة المتفق عليها:</span> <span className="text-emerald-400 font-black text-xl">{contract.value} ر.س</span></p>
             </div>
           </div>
 

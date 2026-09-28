@@ -14,17 +14,25 @@ export function FileUploadZone({ projectId, onUploadSuccess }: FileUploadZonePro
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || !currentUser) return;
+  const processFiles = async (filesList: FileList | null) => {
+    if (!filesList || filesList.length === 0 || !currentUser) return;
 
     setUploading(true);
     setProgress(0);
     setErrorMsg('');
 
-    const fileArray = Array.from(files);
+    const fileArray = Array.from(filesList);
+    
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    const oversized = fileArray.filter(f => f.size > MAX_FILE_SIZE);
+    if (oversized.length > 0) {
+      setErrorMsg(`الملفات التالية أكبر من 50MB: ${oversized.map(f => f.name).join(', ')}`);
+      setUploading(false);
+      return;
+    }
     
     let completedFiles = 0;
     
@@ -63,6 +71,7 @@ export function FileUploadZone({ projectId, onUploadSuccess }: FileUploadZonePro
                   url: downloadURL,
                   type: file.type || 'unknown',
                   size: file.size,
+                  storagePath: uploadTask.snapshot.ref.fullPath,
                   uploadedAt: serverTimestamp()
                 });
                 
@@ -76,12 +85,17 @@ export function FileUploadZone({ projectId, onUploadSuccess }: FileUploadZonePro
         });
       });
 
-      await Promise.all(uploadPromises);
+      const results = await Promise.allSettled(uploadPromises);
       
       setUploading(false);
       setProgress(0);
       if (fileInputRef.current) fileInputRef.current.value = '';
       onUploadSuccess();
+      
+      const failed = results.filter(r => r.status === 'rejected');
+      if (failed.length > 0) {
+        setErrorMsg(`تم رفع البعض، لكن فشل رفع ${failed.length} ملف.`);
+      }
       
     } catch (err: any) {
       console.error("Error during batch upload:", err);
@@ -90,8 +104,31 @@ export function FileUploadZone({ projectId, onUploadSuccess }: FileUploadZonePro
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => processFiles(e.target.files);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    processFiles(e.dataTransfer.files);
+  };
+
   return (
-    <div className="border-2 border-dashed border-indigo-500/30 bg-slate-900/50 rounded-2xl p-10 text-center hover:bg-slate-900 transition-all group">
+    <div 
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`border-2 border-dashed ${isDragging ? 'border-indigo-400 bg-indigo-900/40' : 'border-indigo-500/30 bg-slate-900/50'} rounded-2xl p-10 text-center transition-all group`}
+    >
       {uploading ? (
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-3">

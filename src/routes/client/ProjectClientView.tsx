@@ -36,7 +36,13 @@ export default function ProjectClientView() {
         const projSnap = await getDoc(projRef);
         
         if (projSnap.exists()) {
-          setProject({ id: projSnap.id, ...projSnap.data() } as Project);
+          const projData = { id: projSnap.id, ...projSnap.data() } as Project;
+          if (projData.clientId !== userData.clientId) {
+            setError('لا تملك صلاحية الوصول لهذا المشروع.');
+            setLoading(false);
+            return;
+          }
+          setProject(projData);
         } else {
           setError('المشروع غير موجود.');
           setLoading(false);
@@ -164,7 +170,7 @@ export default function ProjectClientView() {
               >
                 <div>
                   <h4 className="font-bold text-gray-800 text-lg mb-1">{contract.title}</h4>
-                  <span className={`font-bold px-2 py-1 rounded text-xs inline-block \${contract.status === 'signed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-500'}`}>
+                  <span className={`font-bold px-2 py-1 rounded text-xs inline-block ${contract.status === 'signed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-500'}`}>
                     {contract.status === 'signed' ? 'مُوقّع' : 'بانتظار توقيعك'}
                   </span>
                 </div>

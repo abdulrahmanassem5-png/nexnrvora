@@ -60,7 +60,7 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     fetchProjectAndFiles();
-  }, [currentprojectId]);
+  }, [currentUser, projectId]);
 
   const handleUpdateProject = async () => {
     if (!currentUser || !projectId) return;
@@ -113,7 +113,7 @@ export default function ProjectDetail() {
     if (!currentUser || !projectId || !window.confirm('هل أنت متأكد من حذف الملف؟')) return;
     try {
       await deleteDoc(doc(db, `freelancers/${currentUser.uid}/projects/${projectId}/files/${file.id}`));
-      const fileRef = ref(storage, `freelancers/${currentUser.uid}/projects/${projectId}/${file.name}`);
+      const fileRef = ref(storage, file.storagePath || `freelancers/${currentUser.uid}/projects/${projectId}/${file.name}`);
       await deleteObject(fileRef);
       setFiles(prev => prev.filter(f => f.id !== file.id));
     } catch (error) {
@@ -289,7 +289,7 @@ export default function ProjectDetail() {
               >
                 <div className="flex justify-between items-center">
                   <span className="font-black text-slate-50 line-clamp-1">{contract.title}</span>
-                  <span className={`font-bold px-2 py-1 rounded text-xs \${contract.status === 'signed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-500'}`}>
+                  <span className={`font-bold px-2 py-1 rounded text-xs ${contract.status === 'signed' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-500'}`}>
                     {contract.status === 'signed' ? 'مُوقّع' : contract.status === 'sent' ? 'بانتظار التوقيع' : 'مسودة'}
                   </span>
                 </div>
@@ -370,7 +370,7 @@ export default function ProjectDetail() {
             <h3 className="text-2xl font-black text-slate-50">تقييم العميل</h3>
             <button
               onClick={handleToggleReviewPublic}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors \${
+              className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${
                 project.review.isPublic 
                   ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
                   : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
@@ -382,7 +382,7 @@ export default function ProjectDetail() {
           <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl">
             <div className="flex items-center gap-1 mb-4">
               {[1, 2, 3, 4, 5].map((star) => (
-                <svg key={star} className={`w-6 h-6 \${project.review!.rating >= star ? 'text-yellow-500' : 'text-slate-700'}`} fill="currentColor" viewBox="0 0 24 24">
+                <svg key={star} className={`w-6 h-6 ${project.review!.rating >= star ? 'text-yellow-500' : 'text-slate-700'}`} fill="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                 </svg>
               ))}

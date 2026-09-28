@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { collection, query, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
@@ -27,6 +27,11 @@ export function AIAssistant({ project }: AIAssistantProps) {
   const [clientName, setClientName] = useState('غير محدد');
 
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const model = useMemo(() => {
+    if (!apiKey) return null;
+    const genAI = new GoogleGenerativeAI(apiKey);
+    return genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  }, [apiKey]);
 
   useEffect(() => {
     if (!currentUser || !project) return;
@@ -81,14 +86,13 @@ ${tasksSummary}
       return;
     }
 
-    const newMsg: ChatMessage = { id: Date.now().toString(), role: 'user', content: promptText };
+    const newMsg: ChatMessage = { id: `user-${Date.now()}-${Math.random().toString(36).slice(2)}`, role: 'user', content: promptText };
     setMessages(prev => [...prev, newMsg]);
     setInput('');
     setLoading(true);
 
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      if (!model) throw new Error("Model not initialized");
       
       const history = messages.map(m => ({
         role: m.role,
@@ -105,10 +109,10 @@ ${tasksSummary}
       const result = await chat.sendMessage(promptText);
       const responseText = result.response.text();
       
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'model', content: responseText }]);
+      setMessages(prev => [...prev, { id: `model-${Date.now()}-${Math.random().toString(36).slice(2)}`, role: 'model', content: responseText }]);
     } catch (error) {
       console.error("Gemini API Error:", error);
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'model', content: 'حدث خطأ أثناء التواصل مع الذكاء الاصطناعي. تأكد من صحة مفتاح الـ API.' }]);
+      setMessages(prev => [...prev, { id: `error-${Date.now()}`, role: 'model', content: 'حدث خطأ أثناء التواصل مع الذكاء الاصطناعي. تأكد من صحة مفتاح الـ API.' }]);
     } finally {
       setLoading(false);
     }

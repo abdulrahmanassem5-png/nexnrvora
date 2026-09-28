@@ -80,7 +80,7 @@ export function TestimonialForm({ project, freelancerId }: TestimonialFormProps)
               key={star}
               type="button"
               onClick={() => setRating(star)}
-              className={`w-12 h-12 rounded-full transition-all flex items-center justify-center \${
+              className={`w-12 h-12 rounded-full transition-all flex items-center justify-center ${
                 rating >= star 
                   ? 'bg-yellow-500/20 text-yellow-500 scale-110' 
                   : 'bg-slate-800 text-slate-500 hover:bg-slate-700'
