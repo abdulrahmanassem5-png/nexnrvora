@@ -29,7 +29,7 @@ export default function ClientDetail() {
         const clientSnap = await getDoc(doc(db, `freelancers/${currentUser.uid}/clients/${clientId}`));
         if (clientSnap.exists()) {
           const clientData = clientSnap.data() as Client;
-          setClient({ id: clientSnap.id, ...clientData });
+          setClient({ ...clientData, id: clientSnap.id });
           if (clientData.notes) setNotes(clientData.notes);
         }
 

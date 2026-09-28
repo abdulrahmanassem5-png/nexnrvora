@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Project, Client } from '../../types';
+import type { Project } from '../../types';
 import { Link } from 'react-router-dom';
 import { StatusBadge } from '../../components/freelancer/StatusBadge';
 import { motion } from 'framer-motion';

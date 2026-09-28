@@ -4,7 +4,7 @@ import { doc, getDoc, updateDoc, collection, query, getDocs, deleteDoc, serverTi
 import { deleteObject, ref } from 'firebase/storage';
 import { db, storage } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Project, ProjectFile, Invoice, Contract, User } from '../../types';
+import type { Project, ProjectFile, Invoice, Contract } from '../../types';
 import { sendEmailNotification } from '../../lib/email';
 import { FileUploadZone } from '../../components/freelancer/FileUploadZone';
 import { StatusBadge } from '../../components/freelancer/StatusBadge';

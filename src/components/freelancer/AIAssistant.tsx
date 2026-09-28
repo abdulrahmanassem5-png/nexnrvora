@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { collection, query, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Project, Task, Client } from '../../types';
+import type { Project, Task } from '../../types';
 
 interface AIAssistantProps {
   project: Project;

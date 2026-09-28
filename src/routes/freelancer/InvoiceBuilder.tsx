@@ -38,7 +38,7 @@ export default function InvoiceBuilder() {
         const pSnap = await getDoc(doc(db, `freelancers/${currentUser.uid}/projects/${projectId}`));
         if (pSnap.exists()) {
           const p = pSnap.data() as Project;
-          setProject({ id: pSnap.id, ...p } as Project);
+          setProject({ ...p, id: pSnap.id } as Project);
           
           const cSnap = await getDoc(doc(db, `freelancers/${currentUser.uid}/clients/${p.clientId}`));
           if (cSnap.exists()) {

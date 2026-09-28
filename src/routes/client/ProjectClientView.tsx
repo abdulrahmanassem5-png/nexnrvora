@@ -186,12 +186,12 @@ export default function ProjectClientView() {
       )}
 
       {project.status === 'delivered' && (
-        <TestimonialForm project={project} freelancerId={userData.freelancerId!} />
+        <TestimonialForm project={project} freelancerId={userData?.freelancerId || ''} />
       )}
 
       <div className="mt-12">
         <h3 className="text-xl font-bold mb-4">مساحة النقاش</h3>
-        <ChatBox projectId={projectId!} freelancerId={userData.freelancerId!} />
+        <ChatBox projectId={projectId!} freelancerId={userData?.freelancerId || ''} />
       </div>
     </div>
   );

@@ -150,7 +150,7 @@ export default function PublicPortfolio() {
               }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
-              {items.map((item, idx) => (
+              {items.map((item) => (
                 <motion.div 
                   variants={{ hidden: { opacity: 0, y: 50 }, show: { opacity: 1, y: 0 } }}
                   key={item.id} 

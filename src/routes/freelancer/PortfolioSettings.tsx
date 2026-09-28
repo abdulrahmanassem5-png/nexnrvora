@@ -57,7 +57,7 @@ export default function PortfolioSettings() {
         skills: skillsArray,
         customLogoUrl
       });
-      if (updateProfile) /*updateProfile*/({ bio, skills: skillsArray, customLogoUrl });
+
       alert('تم حفظ الملف الشخصي بنجاح!');
     } catch (err) {
       console.error(err);
